@@ -1,0 +1,315 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Add Integration Grade - MySite{% endblock %}
+
+{% block content %}
+<style>
+    :root {
+      --primary: #e74c3c;
+      --primary-dark: #c0392b;
+      --primary-light: #f9ebea;
+      --secondary: #2c3e50;
+      --accent: #e67e22;
+      --danger: #c0392b;
+      --warning: #f39c12;
+      --light: #f8f9fa;
+      --dark: #2c3e50;
+      --success: #27ae60;
+      --gray: #7f8c8d;
+      --gray-light: #ecf0f1;
+      --white: #ffffff;
+      --shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+      --border-radius: 16px;
+      --transition: all 0.2s ease;
+    }
+
+    .grade-form {
+      background: var(--white);
+      padding: 30px;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--dark);
+      font-size: 14px;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 10px 15px;
+      border: 1px solid var(--gray-light);
+      border-radius: 8px;
+      font-size: 14px;
+      transition: var(--transition);
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
+    }
+
+    .form-hint {
+      display: block;
+      font-size: 12px;
+      color: var(--gray);
+      margin-top: 5px;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 25px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .btn-success {
+      background: var(--success);
+      color: white;
+    }
+
+    .btn-success:hover {
+      background: #229954;
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background: var(--gray-light);
+      color: var(--dark);
+    }
+
+    .btn-secondary:hover {
+      background: var(--gray);
+      color: white;
+      transform: translateY(-2px);
+    }
+
+    .tab-btn {
+      padding: 10px 20px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      font-weight: 600;
+      color: var(--secondary);
+      transition: var(--transition);
+      border-bottom: 3px solid transparent;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tab-btn:hover {
+      color: var(--primary);
+    }
+
+    .tab-btn.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
+
+    .tab-content {
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid var(--primary-light);
+    }
+
+    .card-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--dark);
+      margin: 0;
+    }
+
+    .card-title i {
+      color: var(--primary);
+      margin-right: 8px;
+    }
+
+    .message {
+      padding: 12px 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .message.success {
+      background: #d4edda;
+      border: 1px solid #c3e6cb;
+      color: #155724;
+    }
+
+    .message.error {
+      background: #f8d7da;
+      border: 1px solid #f5c6cb;
+      color: #721c24;
+    }
+
+    .message.warning {
+      background: #fff3cd;
+      border: 1px solid #ffeeba;
+      color: #856404;
+    }
+
+    .message i {
+      font-size: 16px;
+    }
+</style>
+
+<div class="grade-form">
+    <div class="card-header">
+        <h1 class="card-title">
+            <i class="fas fa-graduation-cap"></i>
+            Add/Update Integration Grades
+        </h1>
+    </div>
+
+    {% if messages %}
+        <div style="margin-bottom: 20px;">
+            {% for message in messages %}
+                <div class="message {% if message.tags %}{{ message.tags }}{% endif %}">
+                    <i class="fas fa-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' %}exclamation-circle{% elif message.tags == 'warning' %}exclamation-triangle{% else %}info-circle{% endif %}"></i>
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Student Info -->
+    {% if student %}
+        <div style="background: var(--light); padding: 15px; border-radius: 8px; margin-bottom: 25px;">
+            <strong>Student:</strong> {{ student_name }} ({{ student_number }}) | 
+            <strong>Course:</strong> {{ student_course }} | 
+            <strong>Year:</strong> {{ student_academic_year }}
+        </div>
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <!-- Tab Navigation -->
+        <div style="display: flex; gap: 10px; margin-bottom: 30px; border-bottom: 2px solid #e67e22;">
+            <button type="button" class="tab-btn active" onclick="showTab('manual')">
+                <i class="fas fa-keyboard"></i> Manual Entry
+            </button>
+            <button type="button" class="tab-btn" onclick="showTab('csv')">
+                <i class="fas fa-file-csv"></i> Upload CSV
+            </button>
+        </div>
+        
+        <!-- Manual Entry Tab -->
+        <div id="manual-tab" class="tab-content" style="display: block;">
+            <h3 style="margin-bottom: 20px; color: var(--primary-dark);">Enter Integration Course Grades</h3>
+            <div style="max-height: 500px; overflow-y: auto; border: 1px solid var(--gray-light); padding: 15px; border-radius: 8px;">
+                {% for course_info in course_data %}
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <label class="form-label">
+                            <i class="fas fa-book"></i>
+                            {{ course_info.course.code }}: {{ course_info.course.title }}
+                        </label>
+                        <input type="number" 
+                               id="grade_{{ course_info.course.id }}" 
+                               name="grade_{{ course_info.course.id }}" 
+                               step="0.01" 
+                               min="0" 
+                               max="100" 
+                               class="form-control" 
+                               placeholder="Enter grade (0-100)"
+                               value="{% if course_info.current_grade %}{{ course_info.current_grade }}{% endif %}">
+                        <span class="form-hint">
+                            {% if course_info.current_grade %}
+                                Current: {{ course_info.current_grade }}
+                            {% else %}
+                                No grade yet
+                            {% endif %}
+                        </span>
+                    </div>
+                {% empty %}
+                    <p style="color: var(--secondary); text-align: center;">No integration courses available.</p>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <!-- CSV Upload Tab -->
+        <div id="csv-tab" class="tab-content" style="display: none;">
+            <h3 style="margin-bottom: 20px; color: var(--primary-dark);">Upload Grades via CSV</h3>
+            <div class="form-group">
+                <label for="grades_csv" class="form-label">
+                    <i class="fas fa-file-csv"></i>
+                    CSV File
+                </label>
+                <input type="file" id="grades_csv" name="grades_csv" accept=".csv" class="form-control">
+                <span class="form-hint">
+                    <i class="fas fa-info-circle"></i> 
+                    CSV format: First row as header (e.g., "course_code,grade" or "code,grade_value")
+                </span>
+            </div>
+        </div>
+        
+        <div class="action-buttons">
+            <button type="submit" class="btn btn-success">
+                <i class="fas fa-save"></i>
+                Save Grades
+            </button>
+            <a href="{% url 'integration' %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i>
+                Back to Grades
+            </a>
+        </div>
+    </form>
+</div>
+
+<script>
+    function showTab(tabName) {
+        document.getElementById('manual-tab').style.display = 'none';
+        document.getElementById('csv-tab').style.display = 'none';
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        
+        if (tabName === 'manual') {
+            document.getElementById('manual-tab').style.display = 'block';
+            event.target.classList.add('active');
+        } else if (tabName === 'csv') {
+            document.getElementById('csv-tab').style.display = 'block';
+            event.target.classList.add('active');
+        }
+    }
+</script>
+
+{% endblock %}
